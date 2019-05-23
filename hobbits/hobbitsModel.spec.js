@@ -3,8 +3,31 @@ const Hobbits = require('./hobbitsModel');
 
 describe('hobbits model', () => {
   describe('insert()', () => {
-    
-    //this will empty the database eash time we run tests to not get duplicates
+    // delete/remove would be before the truncate
+    describe('remove()', () => {
+
+      beforeEach(async () => {
+        await db('hobbits').truncate();
+      })
+
+      it('should remove the record', async () => {
+        // first insert a record to delete
+        await Hobbits.insert({ name: 'Merry' });
+        const hobbits = await db('hobbits');
+        console.log(hobbits);
+        expect(hobbits).toHaveLength(1);
+
+        const id = hobbits[0].id;
+
+        await Hobbits.remove(hobbits[0].id);
+        const deletedHobbits = await db('hobbits');
+        expect(deletedHobbits).not.toHaveLength(1)
+      })
+    })
+
+
+
+    //this will empty the database eash time we run tests to not get duplicates - this can be used and dublicated
     beforeEach(async () => {
       await db('hobbits').truncate();
     })
@@ -26,6 +49,6 @@ describe('hobbits model', () => {
       expect(hobbit.name).toBe('sam');
     })
 
-    
+
   })
 })
